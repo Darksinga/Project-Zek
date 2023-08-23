@@ -1034,22 +1034,34 @@ bool Mob::IsBeneficialAllowed(Mob *target)
 	do
 	{
 		if(_CLIENT(mob1))
-		{
-			if(_CLIENT(mob2))					// client to client
-			{
-				c1 = mob1->CastToClient();
-				c2 = mob2->CastToClient();
+        {
+            if(_CLIENT(mob2))                    // client vs client
+            {
+                c1 = mob1->CastToClient();
+                c2 = mob2->CastToClient();
 
-				if (c1->IsDueling() || c2->IsDueling())
-				{
-					if
-					(
-						c1->IsDueling() &&
-						c2->IsDueling() &&
-						c1->GetDuelTarget() == c2->GetID() &&
-						c2->GetDuelTarget() == c1->GetID()
-					) 
-						return true; // if they're dueling they can heal each other too
+
+                if //Level range for pvp is 4 levels, Gangsta change
+                (
+                    c1->GetLevel() >= (c2->GetLevel() - 4) &&
+                    c1->GetLevel() <= (c2->GetLevel() + 4)
+                )
+                    return true;
+                else if    // if both are pvp they can fight
+
+                (
+                    c1->GetPVP() &&
+                    c2->GetPVP()
+                )
+                    return true;
+                else if    // if they're dueling they can go at it
+                (
+                    c1->IsDueling() &&
+                    c2->IsDueling() &&
+                    c1->GetDuelTarget() == c2->GetID() &&
+                    c2->GetDuelTarget() == c1->GetID()
+                )
+                    return true;
 					
 					// if at least one of them is dueling someone, but not each other, then no healing/buffing to/from anyone else
 					return false;

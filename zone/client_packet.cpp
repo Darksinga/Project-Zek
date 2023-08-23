@@ -886,9 +886,9 @@ void Client::Handle_Connect_OP_SendExpZonein(const EQApplicationPacket *app)
 	safe_delete_array(out_app.pBuffer);
 
 	SetSpawned();
-	if (GetPVP())	//force a PVP update until we fix the spawn struct
-		SendAppearancePacket(AT_PVP, GetPVP(), true, false);
-
+	//if (GetPVP())	//force a PVP update until we fix the spawn struct
+	//	SendAppearancePacket(AT_PVP, GetPVP(), true, false);
+	SendAppearancePacket(AT_PVP, 1, true, false); //Gangsta Change
 	//Send AA Exp packet:
 	if (GetLevel() >= 51)
 	{
