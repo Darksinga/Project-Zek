@@ -73,6 +73,7 @@ RULE_BOOL(Character, ForageNeedFoodorDrink, false)
 RULE_BOOL (Character, DisableAAs, false) // Disables server side AA support, since the client allows some AA activity through even with a pre-Luclin expansion set.
 RULE_BOOL ( Character, SacrificeCorpseDepop, false) // If true, Sacrificed corpses will depop 3 minutes after they become empty in Pok, Nexus, or Bazaar
 RULE_INT ( Character, DefaultExpansions, 15) // When a new account is created, this is the default expansions it is given. 1 Kunark 2 Velious 4 Luclin 8 PoP.
+RULE_BOOL (Character, PVPCanLootCoin, false) //Can players loot coin from player corpses?
 RULE_CATEGORY_END()
 
 RULE_CATEGORY( Guild )

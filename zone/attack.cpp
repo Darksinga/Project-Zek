@@ -1494,6 +1494,25 @@ bool Client::Death(Mob* killerMob, int32 damage, uint16 spell, EQ::skills::Skill
 			// creating the corpse takes the cash/items off the player too
 			auto new_corpse = new Corpse(this, exploss, killedby);
 
+			if (killerMob != nullptr && killerMob->IsClient() && RuleB(Character, PVPCanLootCoin)) {
+				if (killerMob->CastToClient()->isgrouped) {
+					Group* group = entity_list.GetGroupByClient(killerMob->CastToClient());
+					if (group != 0)
+					{
+						for (int i = 0; i < 6; i++)
+						{
+							if (group->members[i] != nullptr)
+							{
+								new_corpse->AllowPlayerLoot(group->members[i], i);
+							}
+						}
+					}
+				}
+				else {
+					new_corpse->AllowPlayerLoot(killerMob, 0);
+				}
+			}
+
 			std::string tmp;
 			database.GetVariable("ServerType", tmp);
 			if(tmp[0] == '1' && tmp[1] == '\0' && killerMob != nullptr && killerMob->IsClient()){
@@ -1523,6 +1542,9 @@ bool Client::Death(Mob* killerMob, int32 damage, uint16 spell, EQ::skills::Skill
 							}
 						}
 					}
+				}
+				else {
+					new_corpse->AllowPlayerLoot(killerMob, 0);
 				}
 			}
 

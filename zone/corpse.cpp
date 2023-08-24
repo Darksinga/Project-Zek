@@ -1073,15 +1073,18 @@ bool Corpse::CanPlayerLoot(int charid) {
 
 			if (allowed_looters[i] == charid) {
 				return true;
+				break;
 			}
 		}
 
+		if(IsNPCCorpse()) {
 		/* If we have no looters, obviously client can loot */
-		if (looters == 0) {
-			return true;
+			return looters == 0;
+		}
+		else {
+			return false;
 		}
 	}
-	return false;
 }
 
 void Corpse::AllowPlayerLoot(Mob *them, uint8 slot) {
@@ -1128,10 +1131,7 @@ void Corpse::MakeLootRequestPackets(Client* client, const EQApplicationPacket* a
 	}
 
 	uint8 Loot_Request_Type = 1;
-	bool loot_coin = false;
 	std::string tmp;
-	if(database.GetVariable("LootCoin", tmp))
-		loot_coin = tmp[0] == 1 && tmp[1] == '\0';
 
 	if (this->being_looted_by != 0xFFFFFFFF && this->being_looted_by != client->GetID()) {
 		SendLootReqErrorPacket(client, 0);
@@ -1143,14 +1143,19 @@ void Corpse::MakeLootRequestPackets(Client* client, const EQApplicationPacket* a
 	else if ((IsNPCCorpse() || become_npc) && CanPlayerLoot(client->CharacterID())) {
 		Loot_Request_Type = 2;
 	}
-	else if (GetPlayerKillItem() == -1 && CanPlayerLoot(client->CharacterID())) { /* PVP loot all items, variable cash */
-		Loot_Request_Type = 3;
-	}
-	else if (GetPlayerKillItem() == 1 && CanPlayerLoot(client->CharacterID())) { /* PVP loot 1 item, variable cash */
-		Loot_Request_Type = 4;
-	}
-	else if (GetPlayerKillItem() > 1 && CanPlayerLoot(client->CharacterID())) { /* PVP loot 1 set item, variable cash */
-		Loot_Request_Type = 5;
+	else if (CanPlayerLoot(client->CharacterID())) {
+		if (GetPlayerKillItem() == -1 && CanPlayerLoot(client->CharacterID())) { /* PVP loot all items, variable cash */
+			Loot_Request_Type = 3;
+		}
+		else if (GetPlayerKillItem() == 1 && CanPlayerLoot(client->CharacterID())) { /* PVP loot 1 item, variable cash */
+			Loot_Request_Type = 4;
+		}
+		else if (GetPlayerKillItem() > 1 && CanPlayerLoot(client->CharacterID())) { /* PVP loot 1 set item, variable cash */
+			Loot_Request_Type = 5;
+		}
+		else if (RuleB(Character, PVPCanLootCoin)) {
+			Loot_Request_Type = 8;
+		}
 	}
 
 	if (Loot_Request_Type == 1) {
@@ -1169,7 +1174,7 @@ void Corpse::MakeLootRequestPackets(Client* client, const EQApplicationPacket* a
 		d->unknown2		= 0xef;
 
 		/* Don't take the coin off if it's a gm peeking at the corpse */
-		if(Loot_Request_Type == 2 || (Loot_Request_Type >= 3 && loot_coin)) { 
+		if(Loot_Request_Type == 2 || (Loot_Request_Type >= 3)) { 
 			if(!IsPlayerCorpse() && client->IsGrouped() && client->AutoSplitEnabled() && client->GetGroup()) {
 				d->copper		= 0;
 				d->silver		= 0;
