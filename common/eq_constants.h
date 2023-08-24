@@ -26,6 +26,10 @@
 #include <string>
 
 
+static const uint32 DB_FACTION_GEM_CHOPPERS = 255;
+static const uint32 DB_FACTION_HERETICS = 265;
+static const uint32 DB_FACTION_KING_AKANON = 333;
+
 //SpawnAppearance types:
 #define AT_Die			0	// this causes the client to keel over and zone to bind point
 #define AT_WhoLevel		1	// the level that shows up on /who

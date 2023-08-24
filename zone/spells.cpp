@@ -1897,6 +1897,35 @@ bool Mob::SpellFinished(uint16 spell_id, Mob *spell_target, CastingSlot slot, ui
 	if(!IsValidSpell(spell_id))
 		return false;
 
+	//Guard Assist Code
+	if	(
+			spell_target && IsDetrimentalSpell(spell_id) && spell_target != this
+		)
+	{
+		if (IsClient() && spell_target->IsClient()|| (HasOwner() && GetOwner()->IsClient() && spell_target->IsClient())) {
+			std::list<Mob*> npcList;
+			entity_list.GetNearestNPCs(this, npcList, GetAssistRange()+50.f, true);
+			Mob* listMob;
+
+			auto iter = npcList.begin();
+			while (iter != npcList.end())
+			{
+				listMob = *iter;
+				if (listMob->IsNPC() && (listMob->CastToNPC()->IsGuard() || listMob->CastToNPC()->IsGuildmaster()))
+				{
+					float distance = Distance(spell_target->GetPosition(), listMob->GetPosition());
+					if ((listMob->CheckLosFN(spell_target) || listMob->CheckLosFN(this)) && distance <= 70) {
+						auto petorowner = GetOwnerOrSelf();
+						if (spell_target->GetReverseFactionCon(listMob) <= petorowner->GetReverseFactionCon(listMob)) {
+							listMob->AddToHateList(this);
+						}
+					}
+				}
+				++iter;
+			}
+		}
+	}
+
 	if( spells[spell_id].zonetype == 1 && !zone->CanCastOutdoor()){
 		if(IsClient()){
 			if(!CastToClient()->GetGM()){

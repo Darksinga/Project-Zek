@@ -171,6 +171,8 @@ public:
 
 	bool	DatabaseCastAccepted(int spell_id);
 	bool	IsFactionListAlly(uint32 other_faction);
+	bool	IsGuard();
+	bool	IsGuildmaster();
 	FACTION_VALUE CheckNPCFactionAlly(int32 other_faction);
 	virtual FACTION_VALUE GetReverseFactionCon(Mob* iOther);
 	void	DescribeAggro(Client *towho, Mob *mob, bool verbose);

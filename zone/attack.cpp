@@ -1022,6 +1022,35 @@ bool Client::Attack(Mob* other, int hand, int damagePct)
 	// If we are this far, this means we are atleast making a swing.
 	other->AddToHateList(this, hate);
 
+	//Guard Assist Code
+	if	(
+			(IsClient() && other->IsClient()) ||
+			(HasOwner() && GetOwner()->IsClient() && other->IsClient())
+		)
+	{
+
+        std::list<Mob*> npcList;
+        entity_list.GetNearestNPCs(this, npcList, GetAssistRange()+50.f, true);
+        Mob* listMob;
+
+		auto iter = npcList.begin();
+        while (iter != npcList.end())
+		{
+            listMob = *iter;
+            if (listMob->IsNPC() && (listMob->CastToNPC()->IsGuard() || listMob->CastToNPC()->IsGuildmaster()))
+            {
+				float distance = Distance(other->CastToClient()->m_Position, listMob->GetPosition());
+				if ((listMob->CheckLosFN(other) || listMob->CheckLosFN(this)) && distance <= 70) {
+					auto petorowner = GetOwnerOrSelf();
+					if (other->GetReverseFactionCon(listMob) <= petorowner->GetReverseFactionCon(listMob)) {
+						listMob->AddToHateList(this);
+					}
+				}
+            }
+            ++iter;
+        }
+	}
+
 	///////////////////////////////////////////////////////////
 	////// Send Attack Damage
 	///////////////////////////////////////////////////////////
@@ -1667,6 +1696,35 @@ bool NPC::Attack(Mob* other, int hand, int damagePct)
 				skillinuse = EQ::skills::SkillHandtoHand;
 				break;
 		}
+	}
+
+	//Guard Assist Code
+	if	(
+			(IsClient() && other->IsClient()) ||
+			(HasOwner() && GetOwner()->IsClient() && other->IsClient())
+		)
+	{
+
+        std::list<Mob*> npcList;
+        entity_list.GetNearestNPCs(this, npcList, GetAssistRange()+50.f, true);
+        Mob* listMob;
+
+		auto iter = npcList.begin();
+        while (iter != npcList.end())
+		{
+            listMob = *iter;
+            if (listMob->IsNPC() && (listMob->CastToNPC()->IsGuard() || listMob->CastToNPC()->IsGuildmaster()))
+            {
+				float distance = Distance(other->GetPosition(), listMob->GetPosition());
+				if ((listMob->CheckLosFN(other) || listMob->CheckLosFN(this)) && distance <= 70) {
+					auto petorowner = GetOwnerOrSelf();
+					if (other->GetReverseFactionCon(listMob) <= petorowner->GetReverseFactionCon(listMob)) {
+						listMob->AddToHateList(this);
+					}
+				}
+            }
+            ++iter;
+        }
 	}
 
 	int baseDamage = GetBaseDamage(other, hand);

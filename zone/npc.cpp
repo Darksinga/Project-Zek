@@ -2717,3 +2717,74 @@ void NPC::SetSkill(EQ::skills::SkillType skill_num, uint16 value)
 	
 	skills[skill_num] = value;
 }
+
+bool NPC::IsGuard()
+{
+	switch (GetRace()) {
+	case RT_GUARD:
+		if (GetTexture() == 1 || GetTexture() == 2)
+			return true;
+		break;
+	case RT_IKSAR_2:
+		if (GetTexture() == 1)
+			return true;
+		break;
+	case RT_GUARD_2:
+	case RT_GUARD_3:
+	case RT_GUARD_4:
+	case RT_HUMAN_3:
+	case RT_HALFLING_2:
+	case RT_ERUDITE_2:
+	case RT_BARBARIAN_2:
+	case RT_DARK_ELF_2:
+	case RT_TROLL_2:
+	case OGGOK_CITIZEN:
+	case RT_DWARF_2:
+		return true;
+	default:
+		break;
+	}
+	if (GetPrimaryFaction() == DB_FACTION_GEM_CHOPPERS || GetPrimaryFaction() == DB_FACTION_HERETICS || GetPrimaryFaction() == DB_FACTION_KING_AKANON) { //these 3 factions of guards use player races instead of their own races so we must define them by faction.
+		return true;
+	}
+	return false;
+}
+
+bool NPC::IsGuildmaster()
+{
+	switch (GetClass()) {
+	case WARRIORGM:
+		return true;
+	case CLERICGM:
+		return true;
+	case PALADINGM:
+		return true;
+	case RANGERGM:
+		return true;
+	case SHADOWKNIGHTGM:
+		return true;
+	case DRUIDGM:
+		return true;
+	case MONKGM:
+		return true;
+	case BARDGM:
+		return true;
+	case ROGUEGM:
+		return true;
+	case SHAMANGM:
+		return true;
+	case NECROMANCERGM:
+		return true;
+	case WIZARDGM:
+		return true;
+	case MAGICIANGM:
+		return true;
+	case ENCHANTERGM:
+		return true;
+	case BEASTLORDGM:
+		return true;
+	default:
+		break;
+	}
+	return false;
+}
