@@ -1211,6 +1211,11 @@ void Client::Damage(Mob* other, int32 damage, uint16 spell_id, EQ::skills::Skill
 	if(!ClientFinishedLoading())
 		damage = DMG_INVUL;
 
+	if (other != nullptr && iBuffTic && IsMoving() && !IsRooted() && !IsFeared())  { //Gangsta change
+		Log(Logs::Detail, Logs::Spells, "Moving, Dot damage reduced from %d to %d points of damage", damage, (damage * 66) / 100);
+		damage = (damage * 66) / 100;
+	}
+
 	//do a majority of the work...
 	CommonDamage(other, damage, spell_id, attack_skill, avoidable, buffslot, iBuffTic);
 }
@@ -1845,6 +1850,11 @@ bool NPC::Attack(Mob* other, int hand, int damagePct)
 void NPC::Damage(Mob* other, int32 damage, uint16 spell_id, EQ::skills::SkillType attack_skill, bool avoidable, int8 buffslot, bool iBuffTic) {
 	if(spell_id==0)
 		spell_id = SPELL_UNKNOWN;
+
+	if (other != nullptr && iBuffTic && IsMoving() && !IsRooted() && !IsFeared() && !IsRunning()) { //Gangsta change, If the target is moving dots only do partial damage
+		Log(Logs::Detail, Logs::Spells, "Moving, Dot damage reduced from %d to %d points of damage", damage, (damage * 66) / 100);
+		damage = (damage * 66) / 100;
+	}
 
 	//handle EVENT_ATTACK. Resets after we have not been attacked for 12 seconds
 	if(attacked_timer.Check())
