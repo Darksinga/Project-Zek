@@ -869,6 +869,7 @@ bool Mob::IsAttackAllowed(Mob *target, bool isSpellAttack, int16 spellid)
 
 				 if //Level range for pvp is 4 levels, Gangsta change
                 (
+					c2->GetLevel() >= RuleI(Character, PVPMinLvl) &&
                     c1->GetLevel() >= (c2->GetLevel() - 4) &&
                     c1->GetLevel() <= (c2->GetLevel() + 4)
                 )
