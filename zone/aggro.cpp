@@ -867,8 +867,9 @@ bool Mob::IsAttackAllowed(Mob *target, bool isSpellAttack, int16 spellid)
 				c1 = mob1->CastToClient();
 				c2 = mob2->CastToClient();
 
-				 if //Level range for pvp is 4 levels, Gangsta change
+				if //Level range for pvp is 4 levels, minimum level is RuleI(Character, PVPMinLvl) Gangsta change
                 (
+					c1->GetLevel() >= RuleI(Character, PVPMinLvl) &&
 					c2->GetLevel() >= RuleI(Character, PVPMinLvl) &&
                     c1->GetLevel() >= (c2->GetLevel() - 4) &&
                     c1->GetLevel() <= (c2->GetLevel() + 4)
