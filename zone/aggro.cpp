@@ -876,7 +876,7 @@ bool Mob::IsAttackAllowed(Mob *target, bool isSpellAttack, int16 spellid)
                 )
                     return true;
 
-					else if	// if both are pvp they can fight
+				else if	// if both are pvp they can fight
 				(
 					c1->GetPVP() &&
 					c2->GetPVP()
@@ -1241,6 +1241,10 @@ bool Client::CombatRange(Mob* other, float dist_squared, bool check_z, bool pseu
 	float z_diff = std::abs(GetZOffset() - other->GetZOffset());
 	size_mod += z_diff;
 
+	if (other->IsClient() && IsClient()) { //Gangsta change, hitbox shortening for melee PvP
+		size_mod = size_mod * .60;
+	}
+
 	if (size_mod > 75.0f)
 		size_mod = 75.0f;
 
@@ -1286,6 +1290,10 @@ bool Mob::CheckLosFN(Mob* other, bool spell_casting) {
 
 	if(other)
 		Result = CheckLosFN(other->GetX(), other->GetY(), other->GetZ(), other->GetSize(), other, spell_casting);
+
+	if (other && other->IsClient() && IsClient() && spell_casting == false) {
+		Result = true;
+	} //Gangsta change, in melee players dont need LoS to auto attack.
 
 	SetLastLosState(Result);
 	return Result;
