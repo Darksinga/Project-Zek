@@ -2205,6 +2205,13 @@ std::string QuestManager::saylink(char* saylink_text, bool silent, const char* l
 
 }
 
+int QuestManager::getguildidbycharid(uint32 char_id) {
+    if (char_id > 0) {
+        return database.GetGuildIDByCharID(char_id);
+    }
+    return 0;
+}
+
 const char* QuestManager::getguildnamebyid(int guild_id) {
 	if (guild_id > 0)
 		return guild_mgr.GetGuildName(guild_id);

@@ -681,6 +681,10 @@ const char *lua_get_guild_name_by_id(uint32 guild_id) {
 	return quest_manager.getguildnamebyid(guild_id);
 }
 
+int lua_get_guild_id_by_char_id(uint32 char_id) {
+	return database.GetGuildIDByCharID(char_id);
+}
+
 void lua_fly_mode(int flymode) {
 	quest_manager.FlyMode(flymode);
 }
@@ -1411,6 +1415,7 @@ luabind::scope lua_register_general() {
 		luabind::def("set_rule", (void(*)(std::string, std::string))& lua_set_rule),
 		luabind::def("get_rule", (std::string(*)(std::string))& lua_get_rule), 
 		luabind::def("get_guild_name_by_id", &lua_get_guild_name_by_id),
+		luabind::def("get_guild_id_by_char_id", &lua_get_guild_id_by_char_id),
 		luabind::def("fly_mode", &lua_fly_mode),
 		luabind::def("faction_value", &lua_faction_value),
 		luabind::def("check_title", &lua_check_title),

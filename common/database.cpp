@@ -2282,3 +2282,22 @@ bool Database::NoRentExpired(const char* name) {
 
 	return (seconds>1800);
 }
+
+
+uint32 Database::GetGuildIDByCharID(uint32 character_id)
+{
+	//static char name[128];
+
+	std::string query = StringFormat("SELECT guild_id FROM guild_members WHERE char_id='%i'", character_id);
+	auto results = QueryDatabase(query);
+
+	if (!results.Success())
+		return 0;
+
+	if (results.RowCount() == 0)
+		return 0;
+
+	auto row = results.begin();
+
+	return atoi(row[0]);
+}
