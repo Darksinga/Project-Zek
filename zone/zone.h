@@ -242,6 +242,8 @@ public:
 	uint8 tradevar;
 	uint8 lootvar;
 
+	bool	is_ffa;
+
 	bool	HasGraveyard();
 	void	SetGraveyard(uint32 zoneid, const glm::vec4& graveyardPosition);
 

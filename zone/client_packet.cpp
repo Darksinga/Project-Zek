@@ -651,7 +651,7 @@ void Client::CompleteConnect()
 
 	parse->EventPlayer(EVENT_ENTER_ZONE, this, "", 0);
 	
-	if (zone->IsFFAZone(zone->GetZoneID())) {
+	if (zone->is_ffa) {
 		this->Message(CC_Red, "[WARNING] This zone is FFA, meaning there is no level restrictions on PvP!");
 	}
 

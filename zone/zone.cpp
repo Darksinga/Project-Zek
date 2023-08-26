@@ -148,6 +148,7 @@ bool Zone::Bootup(uint32 iZoneID, bool iStaticZone) {
 	UpdateWindowTitle(nullptr);
 	zone->GetTimeSync();
 
+	zone->is_ffa = zone->IsFFAZone(zone->GetZoneID());
 	/* Set Logging */
 
 	LogSys.StartFileLogs(StringFormat("%s_port_%u", zone->GetShortName(), ZoneConfig::get()->ZonePort));
@@ -831,6 +832,7 @@ Zone::Zone(uint32 in_zoneid, const char* in_short_name)
 	merchantvar = 0;
 	tradevar = 0;
 	lootvar = 0;
+	is_ffa = false;
 
 	short_name = strcpy(new char[strlen(in_short_name)+1], in_short_name);
 	std::string tmp = short_name;
@@ -1068,6 +1070,7 @@ bool Zone::Init(bool iStaticZone) {
 
 	LoadGrids();
 	LoadTickItems();
+	zone->is_ffa = zone->IsFFAZone(zone->GetZoneID()); //setzoneffa
 
 	if (zone->newzone_data.maxclip > 0.0f)
 		zone->update_range = std::max(250.0f, zone->newzone_data.maxclip + 50.0f);
