@@ -652,7 +652,7 @@ void Client::CompleteConnect()
 	parse->EventPlayer(EVENT_ENTER_ZONE, this, "", 0);
 	
 	if (zone->is_ffa) {
-		this->Message(CC_Red, "[WARNING] This zone is FFA, meaning there is no level restrictions on PvP!");
+		this->Message(CC_Red, "[WARNING] This zone is FFA, meaning there are no level restrictions on PvP!");
 	}
 
 	/* This sub event is for if a player logs in for the first time since entering world. */
@@ -3080,8 +3080,8 @@ void Client::Handle_OP_ClientUpdate(const EQApplicationPacket *app)
 		rewind_timer.Start(30000, true);
 	}
 	
-	if (!IsAIControlled())
-		SetMoving(!(ppu->y_pos  == m_Position.y && ppu->x_pos == m_Position.x));
+	//if (!IsAIControlled()) //dont need apparently
+		//SetMoving(!(ppu->y_pos  == m_Position.y && ppu->x_pos == m_Position.x));
 
 	if (door_check_timer.Check())
 	{
