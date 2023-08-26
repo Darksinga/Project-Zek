@@ -104,6 +104,7 @@ public:
 	bool	SaveZoneCFG();
 	bool	IsLoaded();
 	bool	IsPVPZone() { return pvpzone; }
+	bool	IsFFAZone(uint32 zoneid);
 	inline const char*	GetLongName()	{ return long_name; }
 	inline const char*	GetFileName()	{ return file_name; }
 	inline const char*	GetShortName()	{ return short_name; }

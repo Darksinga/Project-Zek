@@ -650,6 +650,10 @@ void Client::CompleteConnect()
 	TotalKarma = database.GetKarma(AccountID());
 
 	parse->EventPlayer(EVENT_ENTER_ZONE, this, "", 0);
+	
+	if (zone->IsFFAZone(zone->GetZoneID())) {
+		this->Message(CC_Red, "[WARNING] This zone is FFA, meaning there is no level restrictions on PvP!");
+	}
 
 	/* This sub event is for if a player logs in for the first time since entering world. */
 	if (firstlogon == 1){

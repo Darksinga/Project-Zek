@@ -2612,3 +2612,17 @@ Timer Zone::GetInitgridsTimer()
 {
 	return initgrids_timer;
 }
+
+bool Zone::IsFFAZone(uint32 zoneid) {
+
+	std::string query = StringFormat("SELECT id FROM zone_ffa WHERE zoneidnumber='%i'", zoneid);
+	auto results = database.QueryDatabase(query);
+
+	if (!results.Success())
+		return false;
+
+	if (results.RowCount() == 0)
+		return false;
+
+	return true;
+}
