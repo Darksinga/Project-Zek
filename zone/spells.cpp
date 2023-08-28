@@ -3960,7 +3960,7 @@ float Mob::CheckResistSpell(uint8 resist_type, uint16 spell_id, Mob *caster, Mob
 	}
 
 	// PvP
-	if (caster->IsClient() && target && target->IsClient())
+	if ((caster->IsClient() && target && target->IsClient()) || (caster->IsPet() && caster->HasOwner() && GetUltimateOwner()->IsClient() && target && target->IsClient()))
 	{
 		if (resist_chance > 1 && resist_chance < 200)
 		{
@@ -3969,6 +3969,15 @@ float Mob::CheckResistSpell(uint8 resist_type, uint16 spell_id, Mob *caster, Mob
 		if (resist_chance > 196)
 		{
 			resist_chance = 196;		// minimum 2% chance for spells to land
+		}
+		int pvpresistcheck = CheckPvPResistSpell(resist_type, spell_id, caster, target);
+
+		if (pvpresistcheck == 100) { //keep from applying to spells that we dont have logic for, -Gangsta.
+			return 100;
+		} else if (pvpresistcheck == 67) {
+			return 67;
+		} else if (pvpresistcheck == 0) {
+			return 0;
 		}
 	}
 
@@ -4026,6 +4035,269 @@ float Mob::CheckResistSpell(uint8 resist_type, uint16 spell_id, Mob *caster, Mob
 
 			return (100.0f - partial_modifier);
 		}
+	}
+}
+
+int Mob::CheckPvPResistSpell(uint8 resist_type, uint16 spell_id, Mob *caster, Mob *target)
+{
+
+	//Gangstas PvP threshold system
+	// 1. Check level bracket and establish MR Thresholds for resist chances, 2%, 15%, 50%, 98%.
+	// 2. Establish a value to add to resist chance based on how close to the next threshold a player is.
+	// IE: if im in the 15% threshold for stuns at level 50, 30MR to 60MR and I have 45MR I have 15MR points away from the next threshold.
+	// 3. Roll and add "resistchance" bonus talked about in 2. (15MR over the 15% threshold adds an extra 17.25% chance to resist resulting in a total 32.25% resist chance.)
+	
+	//Unresitables
+	if (spell_id == 1769 || spell_id == 1638 || spell_id == 1640 || spell_id == 1642 || spell_id == 264 || spell_id == 99 || spell_id == 665 || spell_id == 259 || spell_id == 665 || spell_id == 1601 || spell_id == 1600) {
+		return 100;
+	}
+
+	int fire = GetFR();
+	int cold = GetCR();
+	int magic = GetMR();
+	int disease = GetDR();
+	int poison = GetPR();
+
+	int target_resist;
+	switch(resist_type)
+	{
+	case RESIST_FIRE:
+		target_resist = fire;
+		break;
+	case RESIST_COLD:
+		target_resist = cold;
+		break;
+	case RESIST_MAGIC:
+		target_resist = magic;
+		break;
+	case RESIST_DISEASE:
+		target_resist = disease;
+		break;
+	case RESIST_POISON:
+		target_resist = poison;
+		break;
+	default:
+		target_resist = 0;
+		break;
+	}
+	
+	int level = GetLevel();
+	int logic;
+	int resistchance; //amount over the minimum resist, if im in a 30 - 60 resist bracket and I have 40 resist, im 10 over.
+	bool CCcheck = false;
+
+	if(IsRootSpell(spell_id)) {
+		CCcheck = true;
+	}
+	else if (IsStunSpell(spell_id)) {
+		CCcheck = true;
+	}
+	else if (IsBlindSpell(spell_id)) {
+		CCcheck = true;
+	}
+	else if (IsMezSpell(spell_id)) {
+		CCcheck = true;
+	}
+	else if (IsSlowSpell(spell_id)) {
+		CCcheck = true;
+	}
+	else if (IsMezSpell(spell_id)) {
+		CCcheck = true;
+	}
+	else if (IsFearSpell(spell_id)) {
+		CCcheck = true;
+	}
+	else if (IsSnareSpell(spell_id)) {
+		CCcheck = true;
+	}
+
+	int lastthresh;
+	float differance;
+
+	//Easy Resist check, use for CC / resistable debuffs
+	if (CCcheck || IsResistDebuffSpell(spell_id) || IsDebuffSpell(spell_id)) {
+		if (level < 20) {
+			if (target_resist >= 30 && target_resist < 45) {
+				logic = 1;
+				differance = 15;
+				lastthresh = 30;
+			}
+			else if (target_resist >= 45 && target_resist < 60) {
+				logic = 2;
+				differance = 15;
+				lastthresh = 45;
+			}
+			else if (target_resist >= 60) {
+				logic = 3;
+			}
+			else {
+				logic = 0;
+			}
+		}
+		else if (level > 20 && level < 35) {
+			if (target_resist >= 30 &&target_resist < 60) {
+				logic = 1;
+				differance = 30;
+				lastthresh = 30;
+			}
+			else if (target_resist >= 60 && target_resist < 90) {
+				logic = 2;
+				differance = 30;
+				lastthresh = 60;
+			}
+			else if (target_resist >= 90) {
+				logic = 3;
+			}
+			else {
+				logic = 0;
+			}
+		}	
+		else if (level >= 35) {
+			if (target_resist >= 60 && target_resist < 90) {
+				logic = 1;
+				differance = 30;
+				lastthresh = 60;
+			}
+			else if (target_resist >= 90 && target_resist < 125) {
+				logic = 2;
+				differance = 35;
+				lastthresh = 90;
+			}
+			else if (target_resist >= 125) {
+				logic = 3;
+			}
+			else {
+				logic = 0;
+			}	
+		}
+	}
+
+	if ((IsDirectDamageSpell(spell_id) || IsDOTSpell(spell_id)) && !CCcheck)
+	{
+		if (level < 20) {
+			if (target_resist >= 30 && target_resist < 60) {
+				logic = 1;
+				differance = 30;
+				lastthresh = 30;
+			}
+			else if (target_resist >= 60 && target_resist < 90) {
+				logic = 2;
+				differance = 30;
+				lastthresh = 60;
+			}
+			else if (target_resist >= 90) {
+				logic = 3;
+			}
+			else {
+				logic = 0;
+			}
+		}
+		else if (level > 20 && level < 35) {
+			if (target_resist >= 60 && target_resist < 90) {
+				logic = 1;
+				differance = 30;
+				lastthresh = 60;
+			}
+			else if (target_resist >= 90 && target_resist < 120) {
+				logic = 2;
+				differance = 30;
+				lastthresh = 90;
+			}
+			else if (target_resist >= 120) {
+				logic = 3;
+			}
+			else {
+				logic = 0;
+			}
+		}	
+		else if (level >= 35) {
+			if (target_resist >= 60 && target_resist < 120) {
+				logic = 1;
+				differance = 60;
+				lastthresh = 60;
+			}
+			else if (target_resist >= 120 && target_resist < 165) {
+				logic = 2;
+				differance = 45;
+				lastthresh = 120;
+			}
+			else if (target_resist >= 165) {
+				logic = 3;
+			}
+			else {
+				logic = 0;
+			}	
+		}	
+	}
+
+
+	//Finally our roll
+	int roll = zone->random.Int(1, 100);
+	float multiplier = 0.0;
+	bool resisted;
+
+	caster->Message(CC_Yellow, "CheckPvPResistSpell(): Logic used: %i", logic);
+
+	if (logic == 0) {
+		resistchance = 2;	
+	} else if (logic == 1) {
+		multiplier = 35 / differance; //to get 13 you take the differance between the thresholds 15-2 = 30
+		resistchance = (multiplier * (target_resist - lastthresh)) + 15;   
+		caster->Message(CC_Yellow, "CheckPvPResistSpell(): Multiplier used: %f", multiplier);   
+	} else if (logic == 2) {
+		multiplier = 48 / differance; //to get 35 you take the differance between the thresholds 50-15 = 35
+		resistchance = (multiplier * (target_resist - lastthresh)) + 50;
+		caster->Message(CC_Yellow, "CheckPvPResistSpell(): Multiplier used: %f", multiplier);
+	} else if (logic == 3) {  
+		resistchance = 98;
+	}
+
+	if (resistchance < 0) {
+		resistchance = 2;
+	}
+	
+	if (roll <= resistchance) {
+		Log(Logs::Moderate, Logs::Spells, "CheckPvPResistSpell(): Spell: %d roll %i <= resist chance: %i", spell_id, roll, resistchance);
+		caster->Message(CC_Yellow, "CheckPvPResistSpell(): RESISTED. Spell: %d roll %i <= resist chance: %i", spell_id, roll, resistchance); //addded for resist testing, remove later
+		resisted = true;
+	}
+	else {
+		Log(Logs::Moderate, Logs::Spells, "CheckPvPResistSpell(): Spell: %d roll %i >= resist chance: %i", spell_id, roll, resistchance);
+		caster->Message(CC_Yellow, "CheckPvPResistSpell(): LANDED. Spell: %d roll %i >= resist chance: %i", spell_id, roll, resistchance); //addded for resist testing, remove later
+		resisted = false;
+	}
+
+	if (resisted) {
+		if (IsDirectDamageSpell(spell_id) && !CCcheck) {
+			int partialroll = zone->random.Int(1, 100);
+			//partial logic, values might need adjusting
+			if (logic = 1) {
+				if (partialroll <= 33) {
+					caster->Message(CC_Yellow, "CheckPvPResistSpell(): Partialed. Spell: %d roll %i <= partial chance: 50", spell_id, partialroll); //addded for resist testing, remove later
+					return 67;
+				} else {
+					return 0;
+				}
+			} else if (logic = 2) {
+				if (partialroll <= 22) {
+					caster->Message(CC_Yellow, "CheckPvPResistSpell(): Partialed. Spell: %d roll %i <= partial chance: 50", spell_id, partialroll); //addded for resist testing, remove later
+					return 67;
+				} else {
+					return 0;
+				}				
+			} else if (logic = 3) {
+				if (partialroll <= 11) {
+					caster->Message(CC_Yellow, "CheckPvPResistSpell(): Partialed. Spell: %d roll %i <= partial chance: 50", spell_id, partialroll); //addded for resist testing, remove later
+					return 67;
+				} else {
+					return 0;
+				}				
+			}
+		} else {
+			return 0;
+		}
+	} else {
+		return 100;
 	}
 }
 

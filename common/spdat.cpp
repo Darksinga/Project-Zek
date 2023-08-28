@@ -424,6 +424,14 @@ bool IsRootSpell(uint16 spell_id)
 	return IsEffectInSpell(spell_id, SE_Root);
 }
 
+bool IsSnareSpell(uint16 spell_id)
+{
+	if(IsEffectInSpell(spell_id, SE_MovementSpeed) && IsDetrimentalSpell(spell_id))
+		return true;
+	else
+		return false;
+}
+
 bool IsBlindSpell(uint16 spell_id)
 {
 	return IsEffectInSpell(spell_id, SE_Blind);

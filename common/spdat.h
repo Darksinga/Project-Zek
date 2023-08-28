@@ -659,6 +659,7 @@ bool IsSummonPCSpell(uint16 spell_id);
 bool IsCharmSpell(uint16 spell_id);
 bool IsDireCharmSpell(uint16 spell_id);
 bool IsRootSpell(uint16 spell_id);
+bool IsSnareSpell(uint16 spell_id);
 bool IsBlindSpell(uint16 spell_id);
 bool IsEffectHitpointsSpell(uint16 spell_id);
 bool IsReduceCastTimeSpell(uint16 spell_id);
