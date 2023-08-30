@@ -1211,7 +1211,7 @@ void Client::Damage(Mob* other, int32 damage, uint16 spell_id, EQ::skills::Skill
 	if(!ClientFinishedLoading())
 		damage = DMG_INVUL;
 
-	if (other != nullptr && iBuffTic && IsMoving() && !IsRooted() && !IsFeared())  { //Gangsta change
+	if (other != nullptr && iBuffTic && ClientMoving() && !IsRooted() && !IsFeared())  { //Gangsta change
 		Log(Logs::Detail, Logs::Spells, "Moving, Dot damage reduced from %d to %d points of damage", damage, (damage * 66) / 100);
 		damage = (damage * 66) / 100;
 	}
