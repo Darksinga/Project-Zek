@@ -126,6 +126,7 @@ RULE_INT(World, WhoListLimit, 20) //The max players returned in /who all.
 RULE_INT(World, MuleToonLimit, 8) // The number of characters a mule account can create/access.
 RULE_BOOL( World, DontBootDynamics, false) // If true, dynamic zones will not boot when a player tries to enter them.
 RULE_REAL( World, CurrentExpansion, 15.0)
+RULE_BOOL( World, Beta, false) // WARNING if true enables the use of #betabuff and #betaport
 RULE_CATEGORY_END()
 
 RULE_CATEGORY( Zone )
