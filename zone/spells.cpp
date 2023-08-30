@@ -4172,8 +4172,8 @@ int Mob::CheckPvPResistSpell(uint8 resist_type, uint16 spell_id, Mob *caster, Mo
 		}
 	}
 
-	if ((IsDirectDamageSpell(spell_id) || IsDOTSpell(spell_id)) && !CCcheck)
-	{
+	if ((resist_type != RESIST_POISON && resist_type != RESIST_DISEASE) && ((IsDirectDamageSpell(spell_id) && !CCcheck || IsDOTSpell(spell_id)) && !CCcheck))
+	{ //DDs and DoTs for FR MR CR, are easier to resist than poison and disease
 		if (level < 20) {
 			if (target_resist >= 30 && target_resist < 60) {
 				logic = 1;
@@ -4230,6 +4230,66 @@ int Mob::CheckPvPResistSpell(uint8 resist_type, uint16 spell_id, Mob *caster, Mo
 		}	
 	}
 
+	if (resist_type == RESIST_POISON || resist_type == RESIST_DISEASE) {
+		if ((IsDirectDamageSpell(spell_id) && !CCcheck || IsDOTSpell(spell_id)) && !CCcheck)
+		{ //DDs and DoTs for PR and DR are harder to resist
+			if (level < 20) {
+				if (target_resist >= 30 && target_resist < 60) {
+					logic = 1;
+					differance = 30;
+					lastthresh = 30;
+				}
+				else if (target_resist >= 60 && target_resist < 90) {
+					logic = 2;
+					differance = 30;
+					lastthresh = 60;
+				}
+				else if (target_resist >= 90) {
+					logic = 3;
+				}
+				else {
+					logic = 0;
+				}
+			}
+			else if (level > 20 && level < 35) {
+				if (target_resist >= 75 && target_resist < 105) {
+					logic = 1;
+					differance = 30;
+					lastthresh = 75;
+				}
+				else if (target_resist >= 105 && target_resist < 135) {
+					logic = 2;
+					differance = 30;
+					lastthresh = 105;
+				}
+				else if (target_resist >= 135) {
+					logic = 3;
+				}
+				else {
+					logic = 0;
+				}
+			}	
+			else if (level >= 35) {
+				if (target_resist >= 135 && target_resist < 165) {
+					logic = 1;
+					differance = 30;
+					lastthresh = 135;
+				}
+				else if (target_resist >= 165 && target_resist < 195) {
+					logic = 2;
+					differance = 30;
+					lastthresh = 165;
+				}
+				else if (target_resist >= 195) {
+					logic = 3;
+				}
+				else {
+					logic = 0;
+				}	
+			}	
+		}
+	}
+
 
 	//Finally our roll
 	int roll = zone->random.Int(1, 100);
@@ -4252,8 +4312,8 @@ int Mob::CheckPvPResistSpell(uint8 resist_type, uint16 spell_id, Mob *caster, Mo
 		resistchance = 98;
 	}
 
-	if (resistchance < 0) {
-		resistchance = 2;
+	if (resistchance > 98) {
+		resistchance = 98;
 	}
 	
 	if (roll <= resistchance) {
@@ -4270,31 +4330,16 @@ int Mob::CheckPvPResistSpell(uint8 resist_type, uint16 spell_id, Mob *caster, Mo
 	if (resisted) {
 		if (IsDirectDamageSpell(spell_id) && !CCcheck) {
 			int partialroll = zone->random.Int(1, 100);
+			int partialchance = 45 - (target_resist / 10);
 			//partial logic, values might need adjusting
-			if (logic = 1) {
-				if (partialroll <= 33) {
-					caster->Message(CC_Yellow, "CheckPvPResistSpell(): Partialed. Spell: %d roll %i <= partial chance: 50", spell_id, partialroll); //addded for resist testing, remove later
-					return 67;
-				} else {
-					return 0;
-				}
-			} else if (logic = 2) {
-				if (partialroll <= 22) {
-					caster->Message(CC_Yellow, "CheckPvPResistSpell(): Partialed. Spell: %d roll %i <= partial chance: 50", spell_id, partialroll); //addded for resist testing, remove later
-					return 67;
-				} else {
-					return 0;
-				}				
-			} else if (logic = 3) {
-				if (partialroll <= 11) {
-					caster->Message(CC_Yellow, "CheckPvPResistSpell(): Partialed. Spell: %d roll %i <= partial chance: 50", spell_id, partialroll); //addded for resist testing, remove later
-					return 67;
-				} else {
-					return 0;
-				}				
+			if (partialroll <= partialchance) {
+				caster->Message(CC_Yellow, "CheckPvPResistSpell(): Partialed. Spell: %d roll %i <= partial chance: %i", spell_id, partialroll, partialchance); //addded for resist testing, remove later
+				return 67;
+			} else {
+				return 0;
 			}
 		} else {
-			return 0;
+			return 100;
 		}
 	} else {
 		return 100;
