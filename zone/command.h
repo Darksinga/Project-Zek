@@ -58,6 +58,7 @@ void command_attackentity(Client *c, const Seperator *sep);
 void command_altactivate(Client *c, const Seperator *sep);
 void command_ban(Client *c, const Seperator *sep);
 void command_betabuff(Client* c, const Seperator *sep);
+void command_betaport(Client* c, const Seperator *sep);
 void command_beard(Client *c, const Seperator *sep);
 void command_beardcolor(Client *c, const Seperator *sep);
 void command_bind(Client *c, const Seperator *sep);

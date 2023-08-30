@@ -163,7 +163,8 @@ int command_init(void)
 		command_add("beard", "- Change the beard of your target.", AccountStatus::GMImpossible, command_beard) ||
 		command_add("beardcolor", "- Change the beard color of your target.", AccountStatus::GMImpossible, command_beardcolor) ||
 		command_add("bestz", "- Ask map for a good Z coord for your x,y coords.", AccountStatus::ApprenticeGuide, command_bestz) ||
-		command_add("betabuff", "[level] - Buffs user's player to provided level, giving level * 100 platinum, along with providing a (potentially non era-specific) set of reagents, spells and skills.", AccountStatus::GMImpossible, command_betabuff) ||
+		command_add("betabuff", "[level] - Buffs user's player to provided level, giving level * 100 platinum, along with providing a (potentially non era-specific) set of reagents, spells and skills.", AccountStatus::Player, command_betabuff) ||
+		command_add("betaport", "ports a player to a designated druid circle.", AccountStatus::Player, command_betaport) ||
 		command_add("bind", "- Sets your targets bind spot to their current location.", AccountStatus::SeniorGuide, command_bind) ||
 		command_add("boatinfo", "- Gets infomation about the boats currently spawned in the zone.", AccountStatus::SeniorGuide, command_boatinfo) ||
 		command_add("bug", "- Bug report system. Encase your bug in quotes. Type: #bug <quote>I have a bug</quote>.", AccountStatus::EQSupport, command_bug) ||
@@ -11325,11 +11326,66 @@ void command_betabuff(Client* c, const Seperator* sep)
 		}
 	}
 	else
-	{
-		c->Message(CC_Default, "Usage: #betabuff [level] - level must be a level higher than your current level.");
+	{ //buff them if no number
+		c->Message(CC_Default, "If you'd like to level yourself add a number. Usage: #betabuff [level] - level must be a level higher than your current level.");
+		c->SpellFinished(430, c); // Storm Strength
+		c->SpellFinished(174, c); // Clarity
+		c->SpellFinished(1729, c); // Augment
+		c->SpellFinished(312, c); // Valor
+		c->SpellFinished(488, c); // Symbol of Naltron
+		c->SpellFinished(60, c); // Resist Fire
+		c->SpellFinished(61, c); // Resist Cold
+		c->SpellFinished(62, c); // Resist Poison
+		c->SpellFinished(63, c); // Resist Disease
+		c->SpellFinished(64, c); // Resist Magic
+		c->SpellFinished(261, c); // Levitate
+		c->SpellFinished(278, c); // Spirit of Wolf
 	}
 }
 
+void command_betaport(Client* c, const Seperator* sep)
+{
+	//Arguments?
+	if (sep->arg[1][0] != 0)
+	{
+		if (strcasecmp(sep->arg[1], "Ring of Commons") == 0 || strcasecmp(sep->arg[1], "Commons") == 0) {
+			c->SpellFinished(531, c); // Ring of Commons
+		}
+		else if(strcasecmp(sep->arg[1], "Ring of Steamfont") == 0 || strcasecmp(sep->arg[1], "Steamfont") == 0) {
+			c->SpellFinished(537, c); // Ring of Steamfont
+		}
+		else if(strcasecmp(sep->arg[1], "Ring of Butcher") == 0 || strcasecmp(sep->arg[1], "Butcher") == 0) {
+			c->SpellFinished(532, c); // Ring of Butcher
+		}
+		else if(strcasecmp(sep->arg[1], "Ring of Ro") == 0 || strcasecmp(sep->arg[1], "Ro") == 0) {
+			c->SpellFinished(535, c); // Ring of Ro
+		}
+		else if(strcasecmp(sep->arg[1], "Ring of Toxxulia") == 0 || strcasecmp(sep->arg[1], "Toxxulia") == 0) {
+			c->SpellFinished(533, c); // Ring of Toxxulia
+		}
+		else if(strcasecmp(sep->arg[1], "Ring of Feerrott") == 0 || strcasecmp(sep->arg[1], "Feerrott") == 0) {
+			c->SpellFinished(536, c); // Ring of Feerrott
+		}
+		else if(strcasecmp(sep->arg[1], "Ring of Lavastorm") == 0 || strcasecmp(sep->arg[1], "Lavastorm") == 0) {
+			c->SpellFinished(534, c); // Ring of Lavastorm
+		}
+		else if(strcasecmp(sep->arg[1], "Ring of Karana") == 0 || strcasecmp(sep->arg[1], "Karana") == 0) {
+			c->SpellFinished(530, c); // Ring of Karana
+		}
+		else if(strcasecmp(sep->arg[1], "Ring of Surefall") == 0 || strcasecmp(sep->arg[1], "Surefall") == 0) {
+			c->SpellFinished(2021, c); // Ring of Surefall
+		} 
+		else {
+			c->Message(CC_Default, "Usage: #betaport [druid ring port name]");
+			c->Message(CC_Default, "Example: #betaport Ring of Commons OR #betaport Commons");			
+		}
+	}
+
+	if (sep->arg[1][0] == 0) {
+		c->Message(CC_Default, "Usage: #betaport [druid ring port name]");
+		c->Message(CC_Default, "Example: #betaport Ring of Commons OR #betaport Commons");	
+	}
+}
 
 
 //Please keep this at the bottom of command.cpp! Feel free to use this for temporary commands used in testing :)
