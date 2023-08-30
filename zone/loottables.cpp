@@ -481,7 +481,7 @@ void NPC::AddLootDrop(const EQ::ItemData *item2, ItemList* itemlist, int8 charge
 			sitem = nullptr;
 		}
 
-		if (foundslot == EQ::invslot::slotPrimary && !range_forced)
+		if (foundslot == EQ::invslot::slotPrimary && !range_forced && GetBodyType() != BT_Animal)
 		{
 			if (mainhandIs1h && itemIs1h && offhandEmpty && GetSpecialAbility(INNATE_DUAL_WIELD))
 			{
@@ -511,7 +511,7 @@ void NPC::AddLootDrop(const EQ::ItemData *item2, ItemList* itemlist, int8 charge
 			}
 		}
 
-		if (foundslot == EQ::invslot::slotSecondary && !range_forced)
+		if (foundslot == EQ::invslot::slotSecondary && !range_forced && GetBodyType() != BT_Animal)
 		{
 			if (!GetSpecialAbility(INNATE_DUAL_WIELD) || item2->ItemType != EQ::item::ItemTypeShield)
 			{
@@ -738,6 +738,8 @@ void NPC::AddItem(uint32 itemid, int8 charges, bool equipitem, bool quest) {
 	const EQ::ItemData * i = database.GetItem(itemid);
 	if(i == nullptr)
 		return;
+	if(GetBodyType() == BT_Animal)
+		equipitem == false;
 	AddLootDrop(i, &itemlist, charges, 0, 255, equipitem, equipitem, quest);
 }
 
