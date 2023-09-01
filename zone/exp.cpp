@@ -599,6 +599,10 @@ void Client::SetLevel(uint8 set_level, bool command)
 
 	if(set_level > m_pp.level) {
 		parse->EventPlayer(EVENT_LEVEL_UP, this, "", 0);
+		if (zone->IsLevelAchievement(set_level, GetClass(), GetBaseRace())) {
+			zone->DoLevelAchievement(GetCleanName(), database.GetGuildNameByID(database.GetGuildIDByCharID(this->CharacterID())), set_level, GetClass(), GetBaseRace());
+		}
+
 		/* QS: PlayerLogLevels */
 		if (RuleB(QueryServ, PlayerLogLevels)){
 			std::string event_desc = StringFormat("Leveled UP :: to Level:%i from Level:%i in zoneid:%i", set_level, m_pp.level, this->GetZoneID());

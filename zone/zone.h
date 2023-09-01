@@ -129,7 +129,9 @@ public:
 	bool	LoadGroundSpawns();
 	void	ReloadStaticData();
 
+	bool 	IsLevelAchievement(uint16 level, uint16 playerclass, uint16 race);
 	bool 	IsKillAchievement(uint32 npcid);
+	void 	DoLevelAchievement(std::string name, std::string guildname, uint16 level, uint16 playerclass, uint16 race);
 	void	DoKillAchievement(uint32 npcid, std::string name, uint32 charid, std::string guildname, std::string mobname);
 
 	uint32	CountSpawn2();

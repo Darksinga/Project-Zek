@@ -2630,6 +2630,43 @@ bool Zone::IsFFAZone(uint32 zoneid) {
 	return true;
 }
 
+bool Zone::IsLevelAchievement(uint16 level, uint16 playerclass, uint16 race) 
+{ 
+
+    std::string query = StringFormat("SELECT level, class, race FROM level_log WHERE level=%i AND class=%i AND race=%i", level, playerclass, race);
+    auto results = database.QueryDatabase(query);
+
+    if (results.RowCount() == 0)
+        return true;
+
+    if (results.RowCount() == 1)
+    	return false;
+
+	return false; //In case theres some mixup with the query (there shouldn't be) dont do a achieve
+
+}//MAYBE dont do this in zone? Not sure what the downsides are...? Gangsta
+
+
+void Zone::DoLevelAchievement(std::string name, std::string guildname, uint16 level, uint16 playerclass, uint16 race) 
+{
+    std::string query = StringFormat("INSERT INTO level_log (name, level, class, race) VALUES ('%s', %i, %i, %i)", name, level, playerclass, race);
+    auto results = database.QueryDatabase(query);
+
+	std::string classname = GetPlayerClassName(playerclass, level);
+
+	std::string racename = GetPlayerRaceName(race);
+
+    if (!results.Success())
+        //error logging
+        return;
+    if (results.Success())
+		//success logging
+		worldserver.SendEmoteMessage(0, 0, AccountStatus::Player, CC_Purple, "[Achievement] Congratulations to %s <%s> on becoming the first level %i %s %s", name, guildname, level, racename, classname);
+		return;
+
+
+} //add the level event, spit out the achievement //MAYBE dont do this in zone? Not sure what the downsides are...? Gangsta
+
 bool Zone::IsKillAchievement(uint32 npcid) 
 { 
 
