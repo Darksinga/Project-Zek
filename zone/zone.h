@@ -126,6 +126,7 @@ public:
 		}
 		return reducedspawntimers;
 	}
+
 	void	LoadAAs();
 	int		GetTotalAAs() { return totalAAs; }
 	SendAA_Struct*	GetAABySequence(uint32 seq) { return aas[seq]; }
@@ -359,6 +360,8 @@ private:
 
 	uint16	aggroed_npcs;
 	uint16	pull_limit;
+
+	bool	reducedspawntimers;
 
 	bool	staticzone;
 	bool	gottime;

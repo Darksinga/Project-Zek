@@ -108,7 +108,7 @@ bool ZoneDatabase::SaveZoneCFG(uint32 zoneid, NewZone_Struct* zd) {
 	return true;
 }
 
-bool ZoneDatabase::GetZoneCFG(uint32 zoneid, NewZone_Struct *zone_data, bool &can_bind, bool &can_combat, bool &can_levitate, bool &can_castoutdoor, bool &is_city, uint8 &zone_type, int &ruleset, char **map_filename, bool &can_bind_others, bool &skip_los, bool &drag_aggro, bool &can_castdungeon, uint16 &pull_limit) {
+bool ZoneDatabase::GetZoneCFG(uint32 zoneid, NewZone_Struct *zone_data, bool &can_bind, bool &can_combat, bool &can_levitate, bool &can_castoutdoor, bool &is_city, uint8 &zone_type, int &ruleset, char **map_filename, bool &can_bind_others, bool &skip_los, bool &drag_aggro, bool &can_castdungeon, uint16 &pull_limit, bool &reducedspawntimers) {
 
 	*map_filename = new char[100];
 	zone_data->zone_id = zoneid;
@@ -231,7 +231,7 @@ bool ZoneDatabase::GetZoneCFG(uint32 zoneid, NewZone_Struct *zone_data, bool &ca
 	pull_limit = atoi(row[62]);
 	zone_data->graveyard_time = atoi(row[63]);
 	zone_data->max_z = atof(row[64]);
-
+	reducedspawntimers = atoi(row[65]);
 	return true;
 }
 
