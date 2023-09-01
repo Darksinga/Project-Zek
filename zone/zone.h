@@ -129,6 +129,9 @@ public:
 	bool	LoadGroundSpawns();
 	void	ReloadStaticData();
 
+	bool 	IsKillAchievement(uint32 npcid);
+	void	DoKillAchievement(uint32 npcid, std::string name, uint32 charid, std::string guildname, std::string mobname);
+
 	uint32	CountSpawn2();
 	ZonePoint* GetClosestZonePoint(const glm::vec3& location, const char* to_name, Client *client, float max_distance = 40000.0f);
 	ZonePoint* GetClosestZonePoint(const glm::vec3& location, uint32	to, Client *client, float max_distance = 40000.0f);

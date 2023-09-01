@@ -1950,6 +1950,61 @@ bool NPC::Death(Mob* killerMob, int32 damage, uint16 spell, EQ::skills::SkillTyp
 		parse->EventNPC(EVENT_DEATH_ZONE, entity_list.GetNPCByNPCTypeID(ZONE_CONTROLLER_NPC_ID)->CastToNPC(), nullptr, data_pass, 0);
 	}
 
+	//Gangsta server first npc kills handle here.
+
+	if (IsRaidTarget() && zone->IsKillAchievement(GetNPCTypeID()) && killerMob) {
+		if (killerMob->IsPet() && killerMob->GetUltimateOwner()->IsClient()) {
+			Mob *owner = killerMob->GetOwner();
+
+			if (owner->IsGrouped()) {
+				Group *kg = entity_list.GetGroupByClient(owner->CastToClient());
+				/* Send the kill achievement
+				* for all group members */
+				std::list<uint32>charids;
+				for (int i = 0; i < MAX_GROUP_MEMBERS; i++)
+				{
+					if (kg->members[i] != nullptr && kg->members[i]->IsClient() && IsOnHatelist(kg->members[i]))
+					{ // If Group Member is Client
+						Mob *c = kg->members[i];
+
+						zone->DoKillAchievement(GetNPCTypeID(), c->GetCleanName(), c->CastToClient()->CharacterID(), database.GetGuildNameByID(database.GetGuildIDByCharID(c->CastToClient()->CharacterID())), GetCleanName());
+
+						charids.push_back(c->CastToClient()->CharacterID());
+					}
+				}
+				charids.clear();
+			} else {
+				zone->DoKillAchievement(GetNPCTypeID(), owner->GetCleanName(), owner->CastToClient()->CharacterID(), database.GetGuildNameByID(database.GetGuildIDByCharID(owner->CastToClient()->CharacterID())), GetCleanName());
+			}
+		}
+		if (killerMob->IsClient()) {
+			if (killerMob->IsGrouped()) {
+				Group* kg = entity_list.GetGroupByClient(killerMob->CastToClient());
+				/* Send the kill achievement
+				* for all group members */
+				std::list<uint32>charids;
+				for (int i = 0; i < MAX_GROUP_MEMBERS; i++)
+				{
+					if (kg->members[i] != nullptr && kg->members[i]->IsClient() && IsOnHatelist(kg->members[i]))
+					{ // If Group Member is Client
+						Mob* c = kg->members[i];
+
+						zone->DoKillAchievement(GetNPCTypeID(), c->GetCleanName(), c->CastToClient()->CharacterID(), database.GetGuildNameByID(database.GetGuildIDByCharID(c->CastToClient()->CharacterID())), GetCleanName());
+
+						charids.push_back(c->CastToClient()->CharacterID());
+					}
+				}
+				charids.clear();
+			}
+			else {
+				zone->DoKillAchievement(GetNPCTypeID(), killerMob->GetCleanName(), killerMob->CastToClient()->CharacterID(), database.GetGuildNameByID(database.GetGuildIDByCharID(killerMob->CastToClient()->CharacterID())), GetCleanName());
+
+			}
+		}
+
+		//killerMob->Message(CC_Purple, "You have killed a raid mob!");
+	}
+
 	SetHP(0);
 
 	if (GetPet() && !GetPet()->IsCharmedPet())

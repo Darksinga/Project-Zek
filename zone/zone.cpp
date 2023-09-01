@@ -2629,3 +2629,34 @@ bool Zone::IsFFAZone(uint32 zoneid) {
 
 	return true;
 }
+
+bool Zone::IsKillAchievement(uint32 npcid) 
+{ 
+
+    std::string query = StringFormat("SELECT id FROM kill_firsts WHERE id=%i", npcid);
+    auto results = database.QueryDatabase(query);
+
+    if (results.RowCount() == 0)
+        return true;
+
+    if (results.RowCount() == 1)
+    	return false;
+
+	return false; //In case theres some mixup with the query (there shouldn't be) dont do a achieve
+
+}//MAYBE dont do this in zone? Not sure what the downsides are...? Gangsta
+
+void Zone::DoKillAchievement(uint32 npcid, std::string name, uint32 charid, std::string guildname, std::string mobname)
+{
+
+	std::string query = StringFormat("INSERT INTO kill_firsts (id, name, charid, guild, mobname) VALUES (%i, '%s', %i, '%s', '%s')", npcid, name, charid, guildname, mobname);
+    auto results = database.QueryDatabase(query);
+
+    if (!results.Success())
+        //error logging
+        return;
+    if (results.Success())
+		//success logging
+		worldserver.SendEmoteMessage(0, 0, AccountStatus::Player, CC_Purple, "[Achievement] Congratulations to %s <%s> on becoming the first slayer of %s", name, guildname, mobname);
+		return;
+}
