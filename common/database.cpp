@@ -2286,8 +2286,6 @@ bool Database::NoRentExpired(const char* name) {
 
 uint32 Database::GetGuildIDByCharID(uint32 character_id)
 {
-	//static char name[128];
-
 	std::string query = StringFormat("SELECT guild_id FROM guild_members WHERE char_id='%i'", character_id);
 	auto results = QueryDatabase(query);
 
@@ -2300,4 +2298,26 @@ uint32 Database::GetGuildIDByCharID(uint32 character_id)
 	auto row = results.begin();
 
 	return atoi(row[0]);
+}
+
+
+std::string Database::GetGuildNameByID(uint32 guild_id)
+{
+	static char name[128];
+
+	std::string query = StringFormat("SELECT name FROM guilds WHERE id='%i'", guild_id);
+	auto results = QueryDatabase(query);
+
+	if (!results.Success())
+		return 0;
+
+	if (results.RowCount() == 0)
+		return 0;
+
+	auto row = results.begin();
+
+	memset(name, 0, sizeof(name));
+	strcpy(name, row[0]);
+
+	return name;
 }

@@ -134,6 +134,7 @@ public:
 	uint32	GetCharacterInfo(const char* iName, uint32* oAccID = 0, uint32* oZoneID = 0, float* oX = 0, float* oY = 0, float* oZ = 0, uint64* oDeathTime = 0);
 	uint32	GetCharacterID(const char *name);
 	uint32	GetGuildIDByCharID(uint32 char_id);
+	std::string	GetGuildNameByID(uint32 guild_id);
 	bool	AddBannedIP(std::string banned_ip, std::string notes); //Add IP address to the banned_ips table.
 	bool	CheckBannedIPs(std::string login_ip); //Check incoming connection against banned IP table.
 	bool	CheckGMIPs(std::string login_ip, uint32 account_id);
