@@ -601,7 +601,7 @@ void Client::SetLevel(uint8 set_level, bool command)
 		parse->EventPlayer(EVENT_LEVEL_UP, this, "", 0);
 		if (zone->IsLevelAchievement(set_level, GetClass(), GetBaseRace())) {
 			if (this->IsInAGuild()) {
-			zone->DoLevelAchievement(GetCleanName(), database.GetGuildNameByID(database.GetGuildIDByCharID(this->CharacterID())), set_level, GetClass(), GetBaseRace());
+				zone->DoLevelAchievement(GetCleanName(), database.GetGuildNameByID(database.GetGuildIDByCharID(this->CharacterID())), set_level, GetClass(), GetBaseRace());
 			} else {
 				zone->DoLevelAchievement(GetCleanName(), "", set_level, GetClass(), GetBaseRace());
 			}
@@ -635,6 +635,8 @@ void Client::SetLevel(uint8 set_level, bool command)
 	QueuePacket(outapp);
 	safe_delete(outapp);
 	this->SendAppearancePacket(AT_WhoLevel, set_level); // who level change
+	entity_list.SendMyClientAppearance(this); //update my name color (PvP Status)
+	entity_list.SendClientAppearances(this); //update other peoples name color (PvP Status)
 
 	Log(Logs::General, Logs::Normal, "Setting Level for %s to %i", GetName(), set_level);
 

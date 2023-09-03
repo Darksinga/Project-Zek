@@ -4851,10 +4851,47 @@ void EntityList::SendClientAppearances(Client *to_client)
 			safe_delete(outapp);
 		}
 
+		if (to_client->GetLevel() >= c->GetLevel() - 4 && to_client->GetLevel() <= c->GetLevel() + 4) {
+			c->SendAppearancePacket(AT_PVP, 1, false, false, to_client); //Gangsta Change if the player is within range send pvp packet
+		} else {
+			c->SendAppearancePacket(AT_PVP, 0, false, false, to_client); //Gangsta Change if the player is within range send pvp packet
+		}
+
 		int levitate_value = c->GetFlyMode() ? c->GetFlyMode() : (c->FindType(SE_Levitate) ? 2 : 0);
 		if (levitate_value)
 		{
 			c->SendAppearancePacket(AT_Levitate, levitate_value, false, true, to_client);
+		}
+	}
+}
+
+void EntityList::SendMyClientAppearance(Client *from_client)
+{
+	for (auto& it : client_list)
+	{
+		Client* c = it.second;
+
+		if (from_client->IsLFG())
+		{
+			auto outapp = new EQApplicationPacket(OP_LFGCommand, sizeof(LFG_Appearance_Struct));
+			LFG_Appearance_Struct* lfga = (LFG_Appearance_Struct*)outapp->pBuffer;
+			lfga->entityid = from_client->GetID();
+			lfga->value = from_client->IsLFG();
+
+			c->QueuePacket(outapp);
+			safe_delete(outapp);
+		}
+
+		if (c->GetLevel() >= from_client->GetLevel() - 4 && c->GetLevel() <= from_client->GetLevel() + 4) {
+			from_client->SendAppearancePacket(AT_PVP, 1, false, false, c); //Gangsta Change if the player is within range send pvp packet
+		} else {
+			from_client->SendAppearancePacket(AT_PVP, 0, false, false, c); //Gangsta Change if the player is within range send pvp packet
+		}
+
+		int levitate_value = from_client->GetFlyMode() ? from_client->GetFlyMode() : (from_client->FindType(SE_Levitate) ? 2 : 0);
+		if (levitate_value)
+		{
+			from_client->SendAppearancePacket(AT_Levitate, levitate_value, false, true, c);
 		}
 	}
 }
