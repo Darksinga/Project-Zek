@@ -600,7 +600,11 @@ void Client::SetLevel(uint8 set_level, bool command)
 	if(set_level > m_pp.level) {
 		parse->EventPlayer(EVENT_LEVEL_UP, this, "", 0);
 		if (zone->IsLevelAchievement(set_level, GetClass(), GetBaseRace())) {
+			if (this->IsInAGuild()) {
 			zone->DoLevelAchievement(GetCleanName(), database.GetGuildNameByID(database.GetGuildIDByCharID(this->CharacterID())), set_level, GetClass(), GetBaseRace());
+			} else {
+				zone->DoLevelAchievement(GetCleanName(), "", set_level, GetClass(), GetBaseRace());
+			}
 		}
 
 		/* QS: PlayerLogLevels */

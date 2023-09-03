@@ -1966,15 +1966,22 @@ bool NPC::Death(Mob* killerMob, int32 damage, uint16 spell, EQ::skills::SkillTyp
 					if (kg->members[i] != nullptr && kg->members[i]->IsClient() && IsOnHatelist(kg->members[i]))
 					{ // If Group Member is Client
 						Mob *c = kg->members[i];
-
-						zone->DoKillAchievement(GetNPCTypeID(), c->GetCleanName(), c->CastToClient()->CharacterID(), database.GetGuildNameByID(database.GetGuildIDByCharID(c->CastToClient()->CharacterID())), GetCleanName());
+						if (c->CastToClient()->IsInAGuild()) {
+							zone->DoKillAchievement(GetNPCTypeID(), c->GetCleanName(), c->CastToClient()->CharacterID(), database.GetGuildNameByID(database.GetGuildIDByCharID(c->CastToClient()->CharacterID())), GetCleanName());
+						} else {
+							zone->DoKillAchievement(GetNPCTypeID(), c->GetCleanName(), c->CastToClient()->CharacterID(), "", GetCleanName());
+						}
 
 						charids.push_back(c->CastToClient()->CharacterID());
 					}
 				}
 				charids.clear();
 			} else {
-				zone->DoKillAchievement(GetNPCTypeID(), owner->GetCleanName(), owner->CastToClient()->CharacterID(), database.GetGuildNameByID(database.GetGuildIDByCharID(owner->CastToClient()->CharacterID())), GetCleanName());
+				if (owner->CastToClient()->IsInAGuild()) {
+					zone->DoKillAchievement(GetNPCTypeID(), owner->GetCleanName(), owner->CastToClient()->CharacterID(), database.GetGuildNameByID(database.GetGuildIDByCharID(owner->CastToClient()->CharacterID())), GetCleanName());
+				} else {
+					zone->DoKillAchievement(GetNPCTypeID(), owner->GetCleanName(), owner->CastToClient()->CharacterID(), "", GetCleanName());
+				}
 			}
 		}
 		if (killerMob->IsClient()) {
@@ -1988,17 +1995,22 @@ bool NPC::Death(Mob* killerMob, int32 damage, uint16 spell, EQ::skills::SkillTyp
 					if (kg->members[i] != nullptr && kg->members[i]->IsClient() && IsOnHatelist(kg->members[i]))
 					{ // If Group Member is Client
 						Mob* c = kg->members[i];
-
-						zone->DoKillAchievement(GetNPCTypeID(), c->GetCleanName(), c->CastToClient()->CharacterID(), database.GetGuildNameByID(database.GetGuildIDByCharID(c->CastToClient()->CharacterID())), GetCleanName());
-
+						if (c->CastToClient()->IsInAGuild()) {
+							zone->DoKillAchievement(GetNPCTypeID(), c->GetCleanName(), c->CastToClient()->CharacterID(), database.GetGuildNameByID(database.GetGuildIDByCharID(c->CastToClient()->CharacterID())), GetCleanName());
+						} else {
+							zone->DoKillAchievement(GetNPCTypeID(), c->GetCleanName(), c->CastToClient()->CharacterID(), "", GetCleanName());
+						}
 						charids.push_back(c->CastToClient()->CharacterID());
 					}
 				}
 				charids.clear();
 			}
 			else {
-				zone->DoKillAchievement(GetNPCTypeID(), killerMob->GetCleanName(), killerMob->CastToClient()->CharacterID(), database.GetGuildNameByID(database.GetGuildIDByCharID(killerMob->CastToClient()->CharacterID())), GetCleanName());
-
+				if (killerMob->CastToClient()->IsInAGuild()) {
+					zone->DoKillAchievement(GetNPCTypeID(), killerMob->GetCleanName(), killerMob->CastToClient()->CharacterID(), database.GetGuildNameByID(database.GetGuildIDByCharID(killerMob->CastToClient()->CharacterID())), GetCleanName());
+				} else {
+					zone->DoKillAchievement(GetNPCTypeID(), killerMob->GetCleanName(), killerMob->CastToClient()->CharacterID(), "", GetCleanName());
+				}
 			}
 		}
 
