@@ -4339,9 +4339,10 @@ int Mob::CheckPvPResistSpell(uint8 resist_type, uint16 spell_id, Mob *caster, Mo
 				return 0;
 			}
 		} else {
-			return 100;
+			return 0;
 		}
-	} else {
+	}
+	else {
 		return 100;
 	}
 }
