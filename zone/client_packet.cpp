@@ -7568,6 +7568,10 @@ void Client::Handle_OP_ShopPlayerBuy(const EQApplicationPacket *app)
 			continue;
 		}
 
+		const EQ::ItemData* item = database.GetItem(ml.item);
+		if (!item)
+			continue;
+
 		int32 fac = tmp ? tmp->GetPrimaryFaction() : 0;
 		int32 facmod = GetModCharacterFactionLevel(fac);
 		if(IsInvisible(tmp))
