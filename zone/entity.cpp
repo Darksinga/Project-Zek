@@ -4851,7 +4851,8 @@ void EntityList::SendClientAppearances(Client *to_client)
 			safe_delete(outapp);
 		}
 
-		if (to_client->GetLevel() >= c->GetLevel() - 4 && to_client->GetLevel() <= c->GetLevel() + 4) {
+		if (((to_client->GetLevel() >= c->GetLevel() - 4 && to_client->GetLevel() <= c->GetLevel() + 4) && (c->GetLevel() >= RuleI(Character, PVPMinLvl) && to_client->GetLevel() >= RuleI(Character, PVPMinLvl)))
+		|| (zone->is_ffa)) {
 			c->SendAppearancePacket(AT_PVP, 1, false, false, to_client); //Gangsta Change if the player is within range send pvp packet
 		} else {
 			c->SendAppearancePacket(AT_PVP, 0, false, false, to_client); //Gangsta Change if the player is within range send pvp packet
@@ -4882,7 +4883,8 @@ void EntityList::SendMyClientAppearance(Client *from_client)
 			safe_delete(outapp);
 		}
 
-		if (c->GetLevel() >= from_client->GetLevel() - 4 && c->GetLevel() <= from_client->GetLevel() + 4) {
+		if (((c->GetLevel() >= from_client->GetLevel() - 4 && c->GetLevel() <= from_client->GetLevel() + 4) && (c->GetLevel() >= RuleI(Character, PVPMinLvl) && from_client->GetLevel() >= RuleI(Character, PVPMinLvl)))
+		|| (zone->is_ffa)) {
 			from_client->SendAppearancePacket(AT_PVP, 1, false, false, c); //Gangsta Change if the player is within range send pvp packet
 		} else {
 			from_client->SendAppearancePacket(AT_PVP, 0, false, false, c); //Gangsta Change if the player is within range send pvp packet
