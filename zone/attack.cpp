@@ -3135,7 +3135,6 @@ bool Mob::CheckDualWield()
 
 void Mob::CommonDamage(Mob* attacker, int32 &damage, const uint16 spell_id, const EQ::skills::SkillType skill_used, bool &avoidable, const int8 buffslot, const bool iBuffTic) 
 {
-
 	if (!IsSelfConversionSpell(spell_id) && !iBuffTic)
 	{
 		CommonBreakInvisible(true);
@@ -3167,6 +3166,13 @@ void Mob::CommonDamage(Mob* attacker, int32 &damage, const uint16 spell_id, cons
 	{
 		if (attacker->IsClient())
 		{
+			if (damage > 0 && spell_id == SPELL_UNKNOWN) {
+				int breakchance = damage * .2; // Chance to break root in pvp is 20% of ddmage in a single attack. -Gangsta
+				int breakroll = zone->random.Real(0, 100);
+				if (breakchance >= breakroll) {
+					BuffFadeByEffect(SE_Root);
+				}
+			}
 			// Damage shield damage shouldn't count towards who gets EXP
 			if (!attacker->CastToClient()->IsFeigned() && !FromDamageShield)
 			{
@@ -4221,7 +4227,6 @@ bool Mob::TryRootFadeByDamage(int buffslot, Mob* attacker) {
 	if (IsDetrimentalSpell(spellbonuses.Root[1]) && spellbonuses.Root[1] != buffslot)
 	{
 		int BreakChance = RuleI(Spells, RootBreakFromSpells);
-
 		BreakChance -= BreakChance*buffs[spellbonuses.Root[1]].RootBreakChance/100;
 		int level_diff = attacker->GetLevel() - GetLevel();
 
@@ -4229,6 +4234,10 @@ bool Mob::TryRootFadeByDamage(int buffslot, Mob* attacker) {
 
 		if (BreakChance < 10)
 			BreakChance = 10;
+
+		if (attacker && attacker->IsClient() && IsClient()) { //Gangsta PvP server chance to break root with a nuke is 75% in PvP.
+			BreakChance = 75;
+		}
 
 		if (zone->random.Roll(BreakChance))
 		{
