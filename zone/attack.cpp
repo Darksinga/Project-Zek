@@ -259,6 +259,10 @@ bool Mob::AvoidDamage(Mob* attacker, int32 &damage, bool noRiposte, bool isRange
 	*/
 	Mob *defender = this;
 
+	if(defender && defender->IsClient() && defender->CastToClient()->IsSitting()) {
+		return false;
+	}
+
 	bool InFront = attacker->InFrontMob(this, attacker->GetX(), attacker->GetY());
 
 	// block
@@ -573,14 +577,14 @@ int Mob::CalcMeleeDamage(Mob* defender, int baseDamage, EQ::skills::SkillType sk
 		damage = 1;
 
 	if (IsClient())
-		CastToClient()->RollDamageMultiplier(offense, damage, skill);
+		CastToClient()->RollDamageMultiplier(defender, offense, damage, skill);
 
 	return damage;
 }
 
 // the output of this function is precise and is based on the code from:
 // https://forums.daybreakgames.com/eq/index.php?threads/progression-monks-we-have-work-to-do.229581/
-uint32 Client::RollDamageMultiplier(uint32 offense, int& damage, EQ::skills::SkillType skill)
+uint32 Client::RollDamageMultiplier(Mob* defender, uint32 offense, int& damage, EQ::skills::SkillType skill)
 {
 	int rollChance = 51;
 	int maxExtra = 210;
@@ -627,11 +631,17 @@ uint32 Client::RollDamageMultiplier(uint32 offense, int& damage, EQ::skills::Ski
 	if (baseBonus < 10)
 		baseBonus = 10;
 
-	if (zone->random.Roll(rollChance))
+	if (zone->random.Roll(rollChance) || (defender->IsClient() && defender->CastToClient()->IsSitting()))
 	{
 		uint32 roll;
 
 		roll = zone->random.Int(0, baseBonus) + 100;
+
+		if (defender->IsClient() && defender->CastToClient()->IsSitting()) { //if client is sitting do max damage multiplier
+			roll = baseBonus + 100;
+			//Message(CC_Yellow, "Damage Multi Roll: %i", roll);
+		}
+
 		if (roll > maxExtra)
 			roll = maxExtra;
 
@@ -639,6 +649,8 @@ uint32 Client::RollDamageMultiplier(uint32 offense, int& damage, EQ::skills::Ski
 
 		if (level >= 55 && damage > 1 && skill != EQ::skills::SkillArchery && IsWarriorClass())
 			damage++;
+
+		//Message(CC_Yellow, "Damage Multi Roll: %i", roll);
 
 		return roll;
 	}
@@ -1003,7 +1015,7 @@ bool Client::Attack(Mob* other, int hand, int damagePct)
 
 			damage = damageBonus + CalcMeleeDamage(other, baseDamage, skillinuse);
 
-			if (damagePct <= 0)
+			if (damagePct <= 0 || (other->IsClient() && other->CastToClient()->IsSitting()))
 				damagePct = 100;
 			damage = damage * damagePct / 100;
 
