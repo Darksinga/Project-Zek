@@ -2910,7 +2910,9 @@ void Mob::DoBuffTic(uint16 spell_id, int slot, uint32 ticsremaining, uint8 caste
 			}
 
 			case SE_Root: {
-
+				if ((caster->IsClient() && target->IsClient()) || ((caster->HasOwner() && caster->GetUltimateOwner()->IsClient()) && target->IsClient())) {
+					break; //Gangsta
+				}
 				if (zone->random.Roll(RuleI(Spells, RootBreakCheckChance)))
 				{
 					if (CheckResistSpell(spells[spell_id].resisttype, spell_id, caster, this, false, 0, true) != 100.0f)
