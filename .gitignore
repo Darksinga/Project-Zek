@@ -1,4 +1,8 @@
 bin/*
+*.log
+*.ipch
+*.tlog
+*.txt
 submodules/curl_x86/lib/libcurl.lib
 submodules/curl_x86/lib/libcurl.exp
 submodules/curl_x86/lib/libcurl.dll
