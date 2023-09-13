@@ -196,11 +196,7 @@ public:
 
 	uint8	GetZoneExpansion() { return newzone_data.expansion; }
 	uint16	GetPullLimit() {
-		if (IsReducedSpawnTimersEnabled())
-		{
-			return 4;
-		}
-		return pull_limit; 
+		return RuleI(Quarm, StandardPullLimit);
 	}
 
 	void	LoadLevelEXPMods();
